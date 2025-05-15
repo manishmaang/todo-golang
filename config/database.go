@@ -13,7 +13,7 @@ const connection_string = "mongodb://localhost:27017/"
 const db_name = "golang-todo"
 
 var DB *mongo.Database
-func init() { //special functions jo ki sirf pure application me ek baar run hote hai that to jb application start ho rha hota hai
+func init() { //special functions jo ki sirf pure application me ek baar run hote hai, that to jb application start ho rha hota hai
 
 	//client option
 	clientOption := options.Client().ApplyURI(connection_string).SetMaxPoolSize(10) 
