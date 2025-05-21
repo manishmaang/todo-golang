@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 	"todo-app/config"
 	"todo-app/models"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -63,6 +65,35 @@ func Get_users(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, users)
+}
+
+func Register_users(c *gin.Context) {
+	fmt.Println("Inside the register user function")
+	var user models.Users
+
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	db := config.GetDB()
+	user_collection := db.Collection("users")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := user_collection.InsertOne(ctx, user)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User created successfully",
+		"user_id": result.InsertedID,
+	})
+
 }
 
 // func GetUsers(c *gin.Context) {
